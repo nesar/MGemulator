@@ -5,3 +5,10 @@ PACKAGES REQUIRED:
 2. install RCppNPy package from the commented line r('(install.packages("....")')
 
 
+CODES TO LOOK AT:
+
+EmuRTrain_z_trials.ipynb
+
+mcmc_trial_noZ.ipynb
+
+EmuRTest.ipynb
