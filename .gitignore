@@ -1,0 +1,12 @@
+*.RData
+*.log
+*.npy
+*.pdf
+*.png
+Data
+Data/Chains
+Models
+PPT
+Plots
+__pycache__
+.idea
