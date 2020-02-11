@@ -1,3 +1,6 @@
+import matplotlib as mpl
+mpl.use('Agg')
+
 import numpy as np  
 import matplotlib.pylab as plt
 import time
@@ -11,18 +14,18 @@ import gpflow
 
 dataDir = "./Data/" ## Data folder
 modelDir = "./Models/" ## Data folder
-plotsDir = "./Plots/" ## Data folder
+plotsDir = "./Plots/allPlots/" ## Data folder
 
 nRankMax = [2, 4, 8, 12, 16, 32][4]  ## Number of basis vectors in truncated PCA
 ## Increasing nRankMax will increase emulation precision (asymptotically), but reduce the speed
 
 del_idx = [5, 25, 4, 42]  ## Random holdouts (not used in training, reserved for validation) 
 
-
-snap_ID_arr = [ 23, 54, 65, 76, 2, 33 ,  1]
+snap_ID_arr = np.arange(100)
 
 for snap_ID in snap_ID_arr:
-     
+
+
     ############################# PARAMETERS ##############################
 
     dataDir = "./Data/Emulator213bins/" ## Data folder
@@ -90,17 +93,6 @@ for snap_ID in snap_ID_arr:
     yhat = scipy.signal.savgol_filter(PmPl[:,:], 51, 3) # window size 51, polynomial order 3
     y_train = yhat
 
-    ####################################
-
-    import scipy.signal
-
-    yhat = scipy.signal.savgol_filter(y_train, 51, 3) # window size 51, polynomial order 3
-
-
-    plt.figure(121, (14,10))
-    plt.plot( np.array(y_train).T[:,0:10], 'x')
-    plt.plot( np.array(yhat).T[:,0:10], '--')
-    plt.xscale('log')
 
     ############################# Plot the input parameter distribution ##############################
 
@@ -130,10 +122,10 @@ for snap_ID in snap_ID_arr:
                     a[i, i].bar(bin_edges[:-1], hist / hist.max(), width=0.2, alpha = 0.1)
 
 
-        plt.show()
+        # plt.show()
 
 
-    plot_params(lhd)
+    # plot_params(lhd)
 
     ########################### PCA ###################################
     # set up pca compression
@@ -226,7 +218,7 @@ for snap_ID in snap_ID_arr:
     plt.rc('text', usetex=True)  # Slower
     plt.rc('font', size=18)  # 18 usually
 
-    plt.figure(9939 + snap_ID, figsize=(14, 12))
+    plt.figure(999 + snap_ID, figsize=(14, 12))
     from matplotlib import gridspec
 
     gs = gridspec.GridSpec(2, 1, height_ratios=[3, 1])
@@ -267,7 +259,7 @@ for snap_ID in snap_ID_arr:
 
 
     ax0.set_xticklabels([])
-    plt.savefig(plotsDir + 'Pemu_rank' +str(nRankMax) + '.png', figsize=(28, 24), bbox_inches="tight")
+    plt.savefig(plotsDir + 'Pemu_rank'  + str(snap_ID) + '.png', figsize=(28, 24), bbox_inches="tight")
 
 
     pca_model = pickle.load(open(PCAmodel , 'rb'))
@@ -332,7 +324,7 @@ for snap_ID in snap_ID_arr:
 
 
     ax0.set_xticklabels([])
-    plt.savefig(plotsDir + 'MGemu_rank' +str(nRankMax) + '.png', figsize=(28, 24), bbox_inches="tight")
+    plt.savefig(plotsDir + 'MGemu_rank' + str(snap_ID) + '.png', figsize=(28, 24), bbox_inches="tight")
     # plt.show()
 
     ######### TEMPLATE FOR MCMC LIKELIHOOD FUNCTION #######################
@@ -411,3 +403,6 @@ for snap_ID in snap_ID_arr:
 
 
     fig.savefig(plotsDir + "sensitivity_snap" + str(snap_ID) + ".png",  bbox_inches="tight", dpi=200)
+
+    plt.clf()
+    plt.close('all')
