@@ -1,13 +1,15 @@
 import matplotlib as mpl
 mpl.use('Agg')
+import matplotlib.pylab as plt
+from itertools import cycle
+import matplotlib.ticker as ticker
+
 
 import numpy as np  
-import matplotlib.pylab as plt
 import time
 import pickle
 import os
 from sklearn.decomposition import PCA
-import matplotlib.ticker as ticker
 import gpflow
 
 ############################# PARAMETERS ##############################
@@ -21,7 +23,7 @@ nRankMax = [2, 4, 8, 12, 16, 32][4]  ## Number of basis vectors in truncated PCA
 
 del_idx = [5, 25, 4, 42]  ## Random holdouts (not used in training, reserved for validation) 
 
-snap_ID_arr = np.arange(100)
+snap_ID_arr = [70, 71] #np.arange(100)
 
 for snap_ID in snap_ID_arr:
 
@@ -39,8 +41,8 @@ for snap_ID in snap_ID_arr:
     az = np.loadtxt(dataDir + 'timestepsCOLA.txt', skiprows=1) 
     fileIn = dataDir + 'ratiosbins_' + str(snap_ID) + '.txt'
 
-    GPmodel = modelDir + 'GP_smooth_rank' + str(nRankMax) + 'snap' + str(snap_ID)  ## Double and single quotes are necessary
-    PCAmodel = modelDir + 'PCA_smooth_rank' + str(nRankMax) + 'snap' + str(snap_ID)  ## Double and single quotes are necessary
+    GPmodel = modelDir + '100GP_smooth_rank' + str(nRankMax) + 'snap' + str(snap_ID)  ## Double and single quotes are necessary
+    PCAmodel = modelDir + '100PCA_smooth_rank' + str(nRankMax) + 'snap' + str(snap_ID)  ## Double and single quotes are necessary
 
     print(GPmodel)
     ################################# I/O #################################
@@ -337,8 +339,7 @@ for snap_ID in snap_ID_arr:
         model = Emu(new_params)
         return -0.5 * (np.sum(((y - model) / yerr) ** 2.))
 
-    from itertools import cycle
-    import matplotlib.ticker as ticker
+
 
     allMax = np.max(parameter_array, axis = 0)
     allMin = np.min(parameter_array, axis = 0)
@@ -350,16 +351,14 @@ for snap_ID in snap_ID_arr:
     print(allMean)
     Pk_mean = Emu(allMean) 
 
-
     PlotCls = True
 
-    numPlots = 5
-
-    fig, ax = plt.subplots(5,2, figsize = (15,26))
-
-    plt.subplots_adjust(wspace=0.25)
-
     if PlotCls:
+
+        numPlots = 5
+        fig, ax = plt.subplots(5,2, figsize = (15,26))
+        plt.subplots_adjust(wspace=0.25)
+
         for paramNo in range(5):
             print(paramNo)
             para_range = np.linspace(allMin[paramNo], allMax[paramNo], numPlots)
@@ -400,9 +399,7 @@ for snap_ID in snap_ID_arr:
             start, end = ax[4-paramNo, 0].get_ylim()
             ax[4-paramNo, 0].yaxis.set_ticks( (np.arange(start, end, 0.1)))
             ax[4-paramNo, 0].yaxis.set_major_formatter(ticker.FormatStrFormatter('%0.1f'))
-
-
-    fig.savefig(plotsDir + "sensitivity_snap" + str(snap_ID) + ".png",  bbox_inches="tight", dpi=200)
+        fig.savefig(plotsDir + "sensitivity_snap" + str(snap_ID) + ".png",  bbox_inches="tight", dpi=200)
 
     plt.clf()
     plt.close('all')
