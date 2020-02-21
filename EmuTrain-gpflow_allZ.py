@@ -1,8 +1,9 @@
-import matplotlib as mpl
-mpl.use('Agg')
+# import matplotlib as mpl
+# mpl.use('Agg')
 import matplotlib.pylab as plt
 from itertools import cycle
 import matplotlib.ticker as ticker
+from matplotlib import gridspec
 
 
 import numpy as np  
@@ -41,8 +42,8 @@ for snap_ID in snap_ID_arr:
     az = np.loadtxt(dataDir + 'timestepsCOLA.txt', skiprows=1) 
     fileIn = dataDir + 'ratiosbins_' + str(snap_ID) + '.txt'
 
-    GPmodel = modelDir + '100GP_smooth_rank' + str(nRankMax) + 'snap' + str(snap_ID)  ## Double and single quotes are necessary
-    PCAmodel = modelDir + '100PCA_smooth_rank' + str(nRankMax) + 'snap' + str(snap_ID)  ## Double and single quotes are necessary
+    GPmodel = modelDir + '1100GP_smooth_rank' + str(nRankMax) + 'snap' + str(snap_ID)  ## Double and single quotes are necessary
+    PCAmodel = modelDir + '1100PCA_smooth_rank' + str(nRankMax) + 'snap' + str(snap_ID)  ## Double and single quotes are necessary
 
     print(GPmodel)
     ################################# I/O #################################
@@ -131,7 +132,6 @@ for snap_ID in snap_ID_arr:
 
     ########################### PCA ###################################
     # set up pca compression
-    from sklearn.decomposition import PCA
 
 
     def PCA_compress(x, nComp):
@@ -281,8 +281,6 @@ for snap_ID in snap_ID_arr:
 
 
     plt.figure(999 + snap_ID, figsize=(14, 12))
-    from matplotlib import gridspec
-
     gs = gridspec.GridSpec(2, 1, height_ratios=[3, 1])
     gs.update(hspace=0.1, left=0.2, bottom=0.15, wspace=0.25)
     ax0 = plt.subplot(gs[0])
@@ -327,19 +325,7 @@ for snap_ID in snap_ID_arr:
 
     ax0.set_xticklabels([])
     plt.savefig(plotsDir + 'MGemu_rank' + str(snap_ID) + '.png', figsize=(28, 24), bbox_inches="tight")
-    # plt.show()
-
-    ######### TEMPLATE FOR MCMC LIKELIHOOD FUNCTION #######################
-    # For emcee
-
-    def lnlike(theta, x, y, yerr):
-        p1, p2, p3, p4 = theta
-        new_params = np.array([p1, p2, p3, p4])    
-
-        model = Emu(new_params)
-        return -0.5 * (np.sum(((y - model) / yerr) ** 2.))
-
-
+    plt.show()
 
     allMax = np.max(parameter_array, axis = 0)
     allMin = np.min(parameter_array, axis = 0)
@@ -401,5 +387,7 @@ for snap_ID in snap_ID_arr:
             ax[4-paramNo, 0].yaxis.set_major_formatter(ticker.FormatStrFormatter('%0.1f'))
         fig.savefig(plotsDir + "sensitivity_snap" + str(snap_ID) + ".png",  bbox_inches="tight", dpi=200)
 
-    plt.clf()
-    plt.close('all')
+
+    plt.show()
+    # plt.clf()
+    # plt.close('all')
