@@ -1,5 +1,5 @@
-# import matplotlib as mpl
-# mpl.use('Agg')
+import matplotlib as mpl
+mpl.use('Agg')
 import matplotlib.pylab as plt
 from itertools import cycle
 import matplotlib.ticker as ticker
@@ -24,7 +24,7 @@ nRankMax = [2, 4, 8, 12, 16, 32][4]  ## Number of basis vectors in truncated PCA
 
 del_idx = [5, 25, 4, 42]  ## Random holdouts (not used in training, reserved for validation) 
 
-snap_ID_arr = [70, 71] #np.arange(100)
+snap_ID_arr = np.arange(100)
 
 for snap_ID in snap_ID_arr:
 
@@ -42,8 +42,8 @@ for snap_ID in snap_ID_arr:
     az = np.loadtxt(dataDir + 'timestepsCOLA.txt', skiprows=1) 
     fileIn = dataDir + 'ratiosbins_' + str(snap_ID) + '.txt'
 
-    GPmodel = modelDir + '1100GP_smooth_rank' + str(nRankMax) + 'snap' + str(snap_ID)  ## Double and single quotes are necessary
-    PCAmodel = modelDir + '1100PCA_smooth_rank' + str(nRankMax) + 'snap' + str(snap_ID)  ## Double and single quotes are necessary
+    GPmodel = modelDir + 'noARDGP_smooth_rank' + str(nRankMax) + 'snap' + str(snap_ID)  ## Double and single quotes are necessary
+    PCAmodel = modelDir + 'noARDPCA_smooth_rank' + str(nRankMax) + 'snap' + str(snap_ID)  ## Double and single quotes are necessary
 
     print(GPmodel)
     ################################# I/O #################################
@@ -157,13 +157,13 @@ for snap_ID in snap_ID_arr:
     
 
     def GPflow_fit(parameter_array, weights, fname= GPmodel):
-        kern = gpflow.kernels.Matern52(input_dim = np.shape(parameter_array)[1], ARD=True)
+        kern = gpflow.kernels.Matern52(input_dim = np.shape(parameter_array)[1]) #, ARD=True)
     #     m1 = GPy.models.GPRegression(parameter_array, weights, kernel=kern)
         m = gpflow.models.GPR(parameter_array, weights, kern=kern, mean_function=None)
     #     print_summary(m)
         m.likelihood.variance.assign(0.01)
     #     m.kern.lengthscales.assign([0.3, 0.1, 0.2, 0.3, 0.1])
-        m.kern.lengthscales.assign([25, 65, 15 ,1, 1])
+        # m.kern.lengthscales.assign([25, 65, 15 ,1, 1])
         
         opt = gpflow.train.ScipyOptimizer()
         opt.minimize(m)
@@ -261,7 +261,7 @@ for snap_ID in snap_ID_arr:
 
 
     ax0.set_xticklabels([])
-    plt.savefig(plotsDir + 'Pemu_rank'  + str(snap_ID) + '.png', figsize=(28, 24), bbox_inches="tight")
+    plt.savefig(plotsDir + 'noARDPemu_rank'  + str(snap_ID) + '.png', figsize=(28, 24), bbox_inches="tight")
 
 
     pca_model = pickle.load(open(PCAmodel , 'rb'))
@@ -324,7 +324,7 @@ for snap_ID in snap_ID_arr:
 
 
     ax0.set_xticklabels([])
-    plt.savefig(plotsDir + 'MGemu_rank' + str(snap_ID) + '.png', figsize=(28, 24), bbox_inches="tight")
+    plt.savefig(plotsDir + 'noARDMGemu_rank' + str(snap_ID) + '.png', figsize=(28, 24), bbox_inches="tight")
     plt.show()
 
     allMax = np.max(parameter_array, axis = 0)
@@ -385,9 +385,9 @@ for snap_ID in snap_ID_arr:
             start, end = ax[4-paramNo, 0].get_ylim()
             ax[4-paramNo, 0].yaxis.set_ticks( (np.arange(start, end, 0.1)))
             ax[4-paramNo, 0].yaxis.set_major_formatter(ticker.FormatStrFormatter('%0.1f'))
-        fig.savefig(plotsDir + "sensitivity_snap" + str(snap_ID) + ".png",  bbox_inches="tight", dpi=200)
+        fig.savefig(plotsDir + "noARDsensitivity_snap" + str(snap_ID) + ".png",  bbox_inches="tight", dpi=200)
 
 
-    plt.show()
-    # plt.clf()
-    # plt.close('all')
+    # plt.show()
+    plt.clf()
+    plt.close('all')
