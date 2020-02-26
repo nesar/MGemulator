@@ -79,7 +79,7 @@ np.savetxt('./Data/lhc_'+str(num_evals)+'.txt', AllCombinations)   #### no
 print(AllCombinations)
 
 
-
+##### just taking previous dataset and replace one row with new values (in this case, log(fr0) )
 
 previous_design = np.loadtxt('./Data/mg.design')
 fr0_lin = np.linspace(1e-8, 1e-4, 50)
