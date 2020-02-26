@@ -6,13 +6,13 @@ https://pythonhosted.org/pyDOE/randomized.html
 
 import numpy as np
 from matplotlib import pyplot as plt
-import pyDOE as pyDOE
+import pyDOE2 as pyDOE
 
 def rescale01(xmin, xmax, f):
     return (f - xmin) / (xmax - xmin)
 
 
-num_evals = 32  ## Total number of evaluations for training the emulator
+num_evals = 64  ## Total number of evaluations for training the emulator
 
 np.random.seed(7)
 
@@ -20,19 +20,19 @@ np.random.seed(7)
 ####### Parameters -- replace this and the limits ########
 # para = np.linspace(lower_lim, upper_lim, total_eval)
 
-para1 = np.linspace(0.10, 0.140, num_evals)  #OmegaM
-para2 = np.linspace(0.0205, 0.0235, num_evals) #Omegab
-para3 = np.linspace(0.7, 0.9, num_evals) # sigma8
-para4 = np.linspace(0.55, 0.85, num_evals) # h
-para5 = np.linspace(0.85, 1.05, num_evals) # n_s
+para1 = np.linspace(0.12, 0.150, num_evals)  #OmegaM
+para2 = np.linspace(0.7, 0.9, num_evals) #Omegab
+para3 = np.linspace(0.85, 1.1, num_evals) # sigma8
+para4 = np.linspace(-8, -4, num_evals) # h
+para5 = np.linspace(0, 4, num_evals) # n_s
 
-para6 = np.linspace(0.5, 1.5, num_evals) # z_m
-para7 = np.linspace(0.05, 0.5, num_evals) # FWHM
+# para6 = np.linspace(0.5, 1.5, num_evals) # z_m
+# para7 = np.linspace(0.05, 0.5, num_evals) # FWHM
 
 
 #########################################################################
 
-AllPara = np.vstack([para1, para2, para3, para4, para5, para6, para7])
+AllPara = np.vstack([para1, para2, para3, para4, para5])#, para6, para7])
 
 lhd = pyDOE.lhs(AllPara.shape[0], samples=num_evals, criterion=None) # c cm corr m
 print(lhd)
@@ -46,7 +46,7 @@ plt.rcParams.update({'font.size': 8})
 
 for i in range(AllPara.shape[0]):
     for j in range(i+1):
-        print(i,j)
+        # print(i,j)
         if(i!=j):
             a[i, j].scatter(lhd[:, i], lhd[:, j], s=5)
             a[i, j].grid(True)
@@ -61,7 +61,7 @@ for i in range(AllPara.shape[0]):
 
 
 #plt.savefig('../Cl_data/Plots/LatinSq.png', figsize=(10, 10))
-plt.show()
+# plt.show()
 
 
 idx = (lhd * num_evals).astype(int)
@@ -70,6 +70,21 @@ AllCombinations = np.zeros((num_evals, AllPara.shape[0]))
 for i in range(AllPara.shape[0]):
     AllCombinations[:, i] = AllPara[i][idx[:, i]]
 
-np.savetxt('lhc_'+str(num_evals)+'.txt', AllCombinations)   #### no
+
+
+AllCombinations[:, 3] = 10**AllCombinations[:, 3]
+
+np.savetxt('./Data/lhc_'+str(num_evals)+'.txt', AllCombinations)   #### no
 
 print(AllCombinations)
+
+
+
+
+previous_design = np.loadtxt('./Data/mg.design')
+fr0_lin = np.linspace(1e-8, 1e-4, 50)
+fr0_p = previous_design[:, 3]
+logfr0_log = np.linspace(-8, -4, 50)
+fr0_log = 10**logfr0_log
+previous_design[:, 3] = fr0_log[np.argsort(fr0_p)]
+np.savetxt('./Data/mg_log.design', previous_design)   #### no

@@ -42,8 +42,8 @@ for snap_ID in snap_ID_arr:
     az = np.loadtxt(dataDir + 'timestepsCOLA.txt', skiprows=1) 
     fileIn = dataDir + 'ratiosbins_' + str(snap_ID) + '.txt'
 
-    GPmodel = modelDir + 'noARDGP_smooth_rank' + str(nRankMax) + 'snap' + str(snap_ID)  ## Double and single quotes are necessary
-    PCAmodel = modelDir + 'noARDPCA_smooth_rank' + str(nRankMax) + 'snap' + str(snap_ID)  ## Double and single quotes are necessary
+    GPmodel = modelDir + 'Matern1noARDGP_smooth_rank' + str(nRankMax) + 'snap' + str(snap_ID)  ## Double and single quotes are necessary
+    PCAmodel = modelDir + 'Matern1noARDPCA_smooth_rank' + str(nRankMax) + 'snap' + str(snap_ID)  ## Double and single quotes are necessary
 
     print(GPmodel)
     ################################# I/O #################################
@@ -157,7 +157,8 @@ for snap_ID in snap_ID_arr:
     
 
     def GPflow_fit(parameter_array, weights, fname= GPmodel):
-        kern = gpflow.kernels.Matern52(input_dim = np.shape(parameter_array)[1]) #, ARD=True)
+        # kern = gpflow.kernels.Matern52(input_dim = np.shape(parameter_array)[1]) #, ARD=True)
+        kern = gpflow.kernels.Matern12(input_dim = np.shape(parameter_array)[1], ARD=False)
     #     m1 = GPy.models.GPRegression(parameter_array, weights, kernel=kern)
         m = gpflow.models.GPR(parameter_array, weights, kern=kern, mean_function=None)
     #     print_summary(m)
@@ -261,7 +262,7 @@ for snap_ID in snap_ID_arr:
 
 
     ax0.set_xticklabels([])
-    plt.savefig(plotsDir + 'noARDPemu_rank'  + str(snap_ID) + '.png', figsize=(28, 24), bbox_inches="tight")
+    plt.savefig(plotsDir + 'Matern1noARDPemu_rank'  + str(snap_ID) + '.png', figsize=(28, 24), bbox_inches="tight")
 
 
     pca_model = pickle.load(open(PCAmodel , 'rb'))
@@ -324,7 +325,7 @@ for snap_ID in snap_ID_arr:
 
 
     ax0.set_xticklabels([])
-    plt.savefig(plotsDir + 'noARDMGemu_rank' + str(snap_ID) + '.png', figsize=(28, 24), bbox_inches="tight")
+    plt.savefig(plotsDir + 'Matern1noARDMGemu_rank' + str(snap_ID) + '.png', figsize=(28, 24), bbox_inches="tight")
     plt.show()
 
     allMax = np.max(parameter_array, axis = 0)
@@ -385,7 +386,7 @@ for snap_ID in snap_ID_arr:
             start, end = ax[4-paramNo, 0].get_ylim()
             ax[4-paramNo, 0].yaxis.set_ticks( (np.arange(start, end, 0.1)))
             ax[4-paramNo, 0].yaxis.set_major_formatter(ticker.FormatStrFormatter('%0.1f'))
-        fig.savefig(plotsDir + "noARDsensitivity_snap" + str(snap_ID) + ".png",  bbox_inches="tight", dpi=200)
+        fig.savefig(plotsDir + "Matern1noARDsensitivity_snap" + str(snap_ID) + ".png",  bbox_inches="tight", dpi=200)
 
 
     # plt.show()
