@@ -26,7 +26,7 @@ plotsDir = "./Plots/Fixedn/" ## Data folder
 snap_ID_array = np.arange(100) # [ 23, 54, 79, 95, 98]
 for snap_ID in snap_ID_array:
 
-    nRankMax = [2, 4, 8, 12, 16, 32][4]  ## Number of basis vectors in truncated PCA
+    nRankMax = [2, 4, 8, 12, 16, 32][2]  ## Number of basis vectors in truncated PCA
     ## Increasing nRankMax will increase emulation precision (asymptotically), but reduce the speed
 
     # del_idx = [5, 25, 4, 42]  ## Random holdouts (not used in training, reserved for validation) 

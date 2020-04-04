@@ -12,23 +12,25 @@ def rescale01(xmin, xmax, f):
     return (f - xmin) / (xmax - xmin)
 
 
-num_evals = 64  ## Total number of evaluations for training the emulator
+num_evals = 16  ## Total number of evaluations for training the emulator
 
-np.random.seed(7)
+np.random.seed(17)
 
 #########################################################################
 ####### Parameters -- replace this and the limits ########
 # para = np.linspace(lower_lim, upper_lim, total_eval)
 
-para1 = np.linspace(0.12, 0.150, num_evals)  #OmegaM
-para2 = np.linspace(0.7, 0.9, num_evals) #Omegab
-para3 = np.linspace(0.85, 1.1, num_evals) # sigma8
-para4 = np.linspace(-8, -4, num_evals) # h
-para5 = np.linspace(0, 4, num_evals) # n_s
+para1 = np.linspace(0.12, 0.155, num_evals)  #OmegaM
+para2 = np.linspace(0.85, 1.05, num_evals) # ns
+para3 = np.linspace(0.7, 0.9, num_evals) #sigma8
+para4 = np.linspace(-8, -4, num_evals) # fr0
+para5 = np.linspace(0, 4, num_evals) # n
 
 # para6 = np.linspace(0.5, 1.5, num_evals) # z_m
 # para7 = np.linspace(0.05, 0.5, num_evals) # FWHM
-
+# [ 0.12  0.85  0.7  -8.    0.  ]
+# [ 0.155  1.05   0.9   -4.     4.   ]
+# Om=Om_f, ns=ns_f, s8=s8_f, fR0=fr0_f4, n=n_f, z=z_f
 
 #########################################################################
 
@@ -75,16 +77,26 @@ for i in range(AllPara.shape[0]):
 AllCombinations[:, 3] = 10**AllCombinations[:, 3]
 
 np.savetxt('./Data/lhc_'+str(num_evals)+'.txt', AllCombinations)   #### no
-
+print(50*'=+$')
 print(AllCombinations)
+print(50*'=+$')
 
+TrainshuffleOrder = np.arange(AllCombinations.shape[0])
+np.random.shuffle(TrainshuffleOrder)
+
+AllCombinations = AllCombinations[TrainshuffleOrder]
+
+print(AllCombinations.shape)
+
+np.savetxt('./Data/mg_log_sorted_16.design', AllCombinations)  
 
 ##### just taking previous dataset and replace one row with new values (in this case, log(fr0) )
-
-previous_design = np.loadtxt('./Data/mg.design')
-fr0_lin = np.linspace(1e-8, 1e-4, 50)
-fr0_p = previous_design[:, 3]
-logfr0_log = np.linspace(-8, -4, 50)
-fr0_log = 10**logfr0_log
-previous_design[:, 3] = fr0_log[np.argsort(fr0_p)]
-np.savetxt('./Data/mg_log.design', previous_design)   #### no
+TruePrevious = False
+if TruePrevious:
+    previous_design = np.loadtxt('./Data/mg.design')
+    fr0_lin = np.linspace(1e-8, 1e-4, 50)
+    fr0_p = previous_design[:, 3]
+    logfr0_log = np.linspace(-8, -4, 50)
+    fr0_log = 10**logfr0_log
+    previous_design[:, 3] = fr0_log[np.argsort(fr0_p)]
+    np.savetxt('./Data/mg_log.design', previous_design)   #### no
